@@ -1,0 +1,302 @@
+[
+  {
+    "key": "decor_title",
+    "mime": "image/png",
+    "file": "assets/images/decor_title.png",
+    "bytes": 3651441
+  },
+  {
+    "key": "decor_outside",
+    "mime": "image/png",
+    "file": "assets/images/decor_outside.png",
+    "bytes": 271582
+  },
+  {
+    "key": "decor_attic",
+    "mime": "image/png",
+    "file": "assets/images/decor_attic.png",
+    "bytes": 206979
+  },
+  {
+    "key": "decor_common",
+    "mime": "image/png",
+    "file": "assets/images/decor_common.png",
+    "bytes": 289404
+  },
+  {
+    "key": "decor_road",
+    "mime": "image/png",
+    "file": "assets/images/decor_road.png",
+    "bytes": 2520574
+  },
+  {
+    "key": "decor_fire",
+    "mime": "image/png",
+    "file": "assets/images/decor_fire.png",
+    "bytes": 241170
+  },
+  {
+    "key": "decor_bar",
+    "mime": "image/png",
+    "file": "assets/images/decor_bar.png",
+    "bytes": 265951
+  },
+  {
+    "key": "decor_cellar",
+    "mime": "image/png",
+    "file": "assets/images/decor_cellar.png",
+    "bytes": 241632
+  },
+  {
+    "key": "music_main",
+    "mime": "audio/mpeg",
+    "file": "assets/audio/music_main.mp3",
+    "bytes": 5936478
+  },
+  {
+    "key": "music_tavern",
+    "mime": "audio/mpeg",
+    "file": "assets/audio/music_tavern.mp3",
+    "bytes": 4973910
+  },
+  {
+    "key": "music_remerii",
+    "mime": "audio/mpeg",
+    "file": "assets/audio/music_remerii.mp3",
+    "bytes": 3681462
+  },
+  {
+    "key": "music_final",
+    "mime": "audio/mpeg",
+    "file": "assets/audio/music_final.mp3",
+    "bytes": 4810974
+  },
+  {
+    "key": "remerii_neutral",
+    "mime": "image/png",
+    "file": "assets/images/remerii_neutral.png",
+    "bytes": 1741801
+  },
+  {
+    "key": "remerii_side",
+    "mime": "image/png",
+    "file": "assets/images/remerii_side.png",
+    "bytes": 1680430
+  },
+  {
+    "key": "remerii_smile",
+    "mime": "image/png",
+    "file": "assets/images/remerii_smile.png",
+    "bytes": 1716586
+  },
+  {
+    "key": "remerii_stern",
+    "mime": "image/png",
+    "file": "assets/images/remerii_stern.png",
+    "bytes": 1822865
+  },
+  {
+    "key": "remerii_concerned",
+    "mime": "image/png",
+    "file": "assets/images/remerii_concerned.png",
+    "bytes": 1783074
+  },
+  {
+    "key": "remerii_casting",
+    "mime": "image/png",
+    "file": "assets/images/remerii_casting.png",
+    "bytes": 2524189
+  },
+  {
+    "key": "hylee_neutral",
+    "mime": "image/png",
+    "file": "assets/images/hylee_neutral.png",
+    "bytes": 1674280
+  },
+  {
+    "key": "hylee_sad",
+    "mime": "image/png",
+    "file": "assets/images/hylee_sad.png",
+    "bytes": 1561636
+  },
+  {
+    "key": "hylee_scared",
+    "mime": "image/png",
+    "file": "assets/images/hylee_scared.png",
+    "bytes": 1570808
+  },
+  {
+    "key": "hylee_surprised",
+    "mime": "image/png",
+    "file": "assets/images/hylee_surprised.png",
+    "bytes": 1652453
+  },
+  {
+    "key": "hylee_angry",
+    "mime": "image/png",
+    "file": "assets/images/hylee_angry.png",
+    "bytes": 1774749
+  },
+  {
+    "key": "hylee_hopeful",
+    "mime": "image/png",
+    "file": "assets/images/hylee_hopeful.png",
+    "bytes": 1673440
+  },
+  {
+    "key": "cg_ending_hand",
+    "mime": "image/png",
+    "file": "assets/images/cg_ending_hand.png",
+    "bytes": 2740475
+  },
+  {
+    "key": "cg_ending_solo",
+    "mime": "image/png",
+    "file": "assets/images/cg_ending_solo.png",
+    "bytes": 2389013
+  },
+  {
+    "key": "cg_ending_notready",
+    "mime": "image/png",
+    "file": "assets/images/cg_ending_notready.png",
+    "bytes": 2521285
+  },
+  {
+    "key": "cg_ending_cellar",
+    "mime": "image/png",
+    "file": "assets/images/cg_ending_cellar.png",
+    "bytes": 2706697
+  },
+  {
+    "key": "cg_ending_frost",
+    "mime": "image/png",
+    "file": "assets/images/cg_ending_frost.png",
+    "bytes": 2773242
+  },
+  {
+    "key": "cg_moon_tension",
+    "mime": "image/png",
+    "file": "assets/images/cg_moon_tension.png",
+    "bytes": 2428841
+  },
+  {
+    "key": "cg_ice_confrontation",
+    "mime": "image/png",
+    "file": "assets/images/cg_ice_confrontation.png",
+    "bytes": 2972415
+  },
+  {
+    "key": "cg_arcane_guardians",
+    "mime": "image/png",
+    "file": "assets/images/cg_arcane_guardians.png",
+    "bytes": 2558880
+  },
+  {
+    "key": "cg_remerii_arrival",
+    "mime": "image/png",
+    "file": "assets/images/cg_remerii_arrival.png",
+    "bytes": 307412
+  },
+  {
+    "key": "cg_stairs_father",
+    "mime": "image/png",
+    "file": "assets/images/cg_stairs_father.png",
+    "bytes": 247711
+  },
+  {
+    "key": "cg_final_confrontation_custom",
+    "mime": "image/png",
+    "file": "assets/images/cg_final_confrontation_custom.png",
+    "bytes": 281997
+  },
+  {
+    "key": "cg_cellar_after_explicit",
+    "mime": "image/png",
+    "file": "assets/images/cg_cellar_after_explicit.png",
+    "bytes": 236056
+  },
+  {
+    "key": "cg_forest_crystal",
+    "mime": "image/png",
+    "file": "assets/images/cg_forest_crystal.png",
+    "bytes": 285874
+  },
+  {
+    "key": "video_title",
+    "mime": "video/mp4",
+    "file": "assets/video/video_title.mp4",
+    "bytes": 3882311
+  },
+  {
+    "key": "cg_mental_call_v23",
+    "mime": "image/jpeg",
+    "file": "assets/images/cg_mental_call_v23.jpg",
+    "bytes": 248934
+  },
+  {
+    "key": "cg_mirror_attic_v23",
+    "mime": "image/jpeg",
+    "file": "assets/images/cg_mirror_attic_v23.jpg",
+    "bytes": 230153
+  },
+  {
+    "key": "cg_luggage_v23",
+    "mime": "image/jpeg",
+    "file": "assets/images/cg_luggage_v23.jpg",
+    "bytes": 272381
+  },
+  {
+    "key": "cg_father_bursts_room_v23",
+    "mime": "image/jpeg",
+    "file": "assets/images/cg_father_bursts_room_v23.jpg",
+    "bytes": 236837
+  },
+  {
+    "key": "cg_forest_crystal_v23",
+    "mime": "image/jpeg",
+    "file": "assets/images/cg_forest_crystal_v23.jpg",
+    "bytes": 285874
+  },
+  {
+    "key": "cg_pendant_attic_v23",
+    "mime": "image/jpeg",
+    "file": "assets/images/cg_pendant_attic_v23.jpg",
+    "bytes": 246678
+  },
+  {
+    "key": "cg_dream_miraldas_v23",
+    "mime": "image/jpeg",
+    "file": "assets/images/cg_dream_miraldas_v23.jpg",
+    "bytes": 346493
+  },
+  {
+    "key": "decor_lake_training",
+    "mime": "image/png",
+    "file": "assets/images/decor_lake_training.png",
+    "bytes": 2520574
+  },
+  {
+    "key": "cg_bonus_report",
+    "mime": "image/png",
+    "file": "assets/images/cg_bonus_report.png",
+    "bytes": 245117
+  },
+  {
+    "key": "cg_bonus_arrest",
+    "mime": "image/png",
+    "file": "assets/images/cg_bonus_arrest.png",
+    "bytes": 295169
+  },
+  {
+    "key": "cg_bonus_road",
+    "mime": "image/png",
+    "file": "assets/images/cg_bonus_road.png",
+    "bytes": 3435299
+  },
+  {
+    "key": "music_epilogue",
+    "mime": "audio/mpeg",
+    "file": "assets/audio/music_epilogue.mp3",
+    "bytes": 4306422
+  }
+]

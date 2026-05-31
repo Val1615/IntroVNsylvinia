@@ -1,0 +1,432 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Les Chroniques de Sylvinia — Version 0.25</title>
+<style>
+:root{
+  --bg:#070c16; --bg2:#0e1524; --line:rgba(255,255,255,.14); --line2:rgba(184,245,255,.25);
+  --glass:rgba(6,10,18,.60); --glass-heavy:rgba(5,9,18,.82); --text:#f5f7fb; --muted:rgba(245,247,251,.72);
+  --cyan:#b8f5ff; --gold:#f4d884; --shadow:0 26px 80px rgba(0,0,0,.34);
+}
+*{box-sizing:border-box}
+html,body{margin:0;padding:0;background:radial-gradient(circle at top,rgba(43,116,163,.20),transparent 25%),linear-gradient(180deg,#030711,#09101c 42%,#101824);color:var(--text);font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,sans-serif;min-height:100%}
+button,input{font:inherit}
+button{border:0;cursor:pointer}
+a{color:inherit}
+#app{min-height:100vh;padding:12px}
+.shell{max-width:1120px;margin:0 auto}
+.hero,.frame,.drawer{border:1px solid var(--line);background:var(--glass);backdrop-filter:blur(12px);border-radius:28px;overflow:hidden;box-shadow:var(--shadow)}
+.hero{overflow:hidden}
+.heroVisual{position:relative;height:min(44vh,420px)}
+.heroVisual img{width:100%;height:100%;object-fit:cover;display:block;animation:heroZoom 18s ease-in-out infinite alternate}
+.heroVisual video{width:100%;height:100%;object-fit:cover;display:block;background:#000}
+.heroVisual::after{content:'';position:absolute;inset:0;background:linear-gradient(to top,rgba(3,7,17,.86),rgba(3,7,17,.25) 45%,rgba(3,7,17,.55))}
+.heroContent{position:relative;padding:26px}
+.pill{display:inline-block;padding:7px 12px;border-radius:999px;border:1px solid rgba(184,245,255,.28);background:rgba(184,245,255,.08);color:var(--cyan);font-size:13px;margin-bottom:14px}
+.title{font-family:Georgia,'Times New Roman',serif;font-size:clamp(38px,7vw,74px);line-height:.92;letter-spacing:-.04em;margin:0 0 8px}
+.subtitle{font-size:clamp(18px,3vw,28px);color:var(--cyan);margin:0 0 14px}
+.text{color:var(--muted);line-height:1.65}
+.menuBtns{display:flex;gap:12px;flex-wrap:wrap;margin-top:18px}
+.btn,.ghost,.tagBtn{border-radius:16px;padding:14px 18px;transition:.18s ease;white-space:nowrap}
+.btn{background:linear-gradient(180deg,#d8fbff,#a5eefe);color:#06111c;font-weight:900}
+.btn:hover{transform:translateY(-1px)}
+.ghost,.tagBtn{background:rgba(255,255,255,.08);color:white;border:1px solid var(--line)}
+.ghost:hover,.tagBtn:hover{background:rgba(255,255,255,.14)}
+.frame{position:relative;overflow:visible}
+.topbar{display:flex;justify-content:space-between;gap:12px;padding:14px 16px 10px;align-items:flex-start}
+.loc{text-transform:uppercase;letter-spacing:.28em;font-size:12px;color:rgba(184,245,255,.72);margin-bottom:4px}
+.chapter{font-size:clamp(22px,3vw,30px);line-height:1.05;font-weight:950}
+.chapterSub{font-size:14px;color:rgba(255,255,255,.66)}
+.controls{display:flex;flex-wrap:wrap;gap:8px;justify-content:flex-end;align-items:center}
+.audioBox{display:flex;gap:8px;align-items:center;flex-wrap:wrap;padding:8px 10px;border-radius:14px;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.08)}
+.audioBox span{font-size:12px;color:rgba(255,255,255,.76)}
+.vol{width:90px;accent-color:var(--cyan)}
+.stageWrap{padding:0 12px 14px}
+.stage{position:relative;border-radius:24px;overflow:hidden;background:#04070f;border:1px solid rgba(255,255,255,.10)}
+.stage.fadeout{opacity:.2;transform:scale(.995)}
+.banner{position:relative;height:560px;overflow:hidden;background:#000}
+.banner > img.bannerBg{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;display:block;transform-origin:center center;animation-duration:12s;animation-timing-function:ease-in-out;animation-fill-mode:forwards}
+.bannerOverlay{position:absolute;inset:0;background:linear-gradient(to top,rgba(0,0,0,.62) 8%,rgba(0,0,0,.10) 45%,rgba(0,0,0,.36))}
+.stageTag{position:absolute;left:18px;top:18px;z-index:5;padding:8px 12px;border-radius:999px;border:1px solid rgba(255,255,255,.18);background:rgba(8,14,24,.50);backdrop-filter:blur(10px);font-size:12px;color:rgba(255,255,255,.88)}
+.characterLayer{position:absolute;inset:0;display:block;z-index:4;pointer-events:none}
+.charSlot{position:absolute;bottom:0;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;animation:charFadeIn .28s ease both}
+.charSlot.left{left:2%;width:44%;align-items:flex-start}
+.charSlot.right{right:2%;width:44%;align-items:flex-end}
+.charSlot.center{left:50%;translate:-50% 0;width:42%;align-items:center}
+.charSlot .spriteShell{position:relative;display:flex;align-items:flex-end;justify-content:center;width:100%;min-height:120px}
+.charSlot img{position:relative;inset:auto;display:block;width:100%;height:auto;max-width:100%;max-height:470px;object-fit:contain;filter:drop-shadow(0 20px 38px rgba(0,0,0,.45));transition:.22s ease;animation:none}
+.charSlot.inactive img{opacity:.84;transform:translateY(8px) scale(.95)}
+.charSlot.active img{opacity:1;transform:translateY(0) scale(1)}
+.charSlot.left img{margin-left:2%}
+.charSlot.right img{margin-right:2%}
+.namePlate{margin-top:-8px;min-width:110px;text-align:center;padding:8px 16px;border-radius:999px;border:1px solid rgba(255,255,255,.16);background:rgba(8,14,24,.58);backdrop-filter:blur(12px);font-size:12px;letter-spacing:.01em;z-index:6}
+.charSlot.active .namePlate{border-color:rgba(184,245,255,.35);box-shadow:0 0 0 1px rgba(184,245,255,.08) inset}
+.dialogueCard{position:relative;margin:-58px 18px 18px;z-index:7;border-radius:24px;border:1px solid var(--line2);background:linear-gradient(180deg,rgba(7,12,22,.74),rgba(5,9,18,.88));backdrop-filter:blur(14px);box-shadow:0 18px 60px rgba(0,0,0,.26);padding:20px 20px 18px;animation:dialogueIn .28s ease}
+.dialogueHeader{display:flex;justify-content:space-between;gap:14px;align-items:flex-start;margin-bottom:10px}
+.speakerWrap{display:flex;flex-direction:column}
+.dialogueLabel{font-size:12px;text-transform:uppercase;letter-spacing:.22em;color:rgba(184,245,255,.70);margin-bottom:3px}
+.speaker{font-size:28px;font-weight:950;line-height:1}
+.endBadge{align-self:center;padding:7px 12px;border-radius:999px;border:1px solid rgba(244,216,132,.28);background:rgba(244,216,132,.10);color:var(--gold);font-size:13px;white-space:nowrap}
+.dialogueText{font-size:clamp(17px,1.7vw,20px);line-height:1.66;color:rgba(255,255,255,.96);margin-bottom:16px;max-width:92%}
+.choices{display:grid;gap:10px}
+.choice{width:100%;display:flex;justify-content:space-between;align-items:center;gap:12px;text-align:left;padding:14px 16px;border-radius:18px;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.13);color:#fff;font-weight:850}
+.choice:hover{background:linear-gradient(180deg,rgba(184,245,255,.92),rgba(169,236,248,.86));color:#06111c}
+.choice span:last-child{font-size:20px;opacity:.75}
+.drawerToggle{position:relative;z-index:9;display:flex;justify-content:flex-end;gap:8px;margin:-46px 18px 8px;pointer-events:auto}
+.drawer{margin-top:12px;padding:16px;display:none}
+.drawer.open{display:block;animation:drawerIn .22s ease}
+.drawerGrid{display:grid;grid-template-columns:1.1fr .9fr;gap:14px}
+.sectionTitle{font-size:12px;text-transform:uppercase;letter-spacing:.22em;color:rgba(184,245,255,.72);margin-bottom:10px}
+.note{font-size:14px;color:rgba(255,255,255,.80);line-height:1.58}
+.barRow{margin:10px 0}
+.barHead{display:flex;justify-content:space-between;font-size:14px;color:rgba(255,255,255,.82);margin-bottom:5px}
+.barBg{height:8px;background:rgba(0,0,0,.32);border-radius:999px;overflow:hidden}
+.barFill{height:100%;background:linear-gradient(90deg,rgba(184,245,255,.55),rgba(255,255,255,.88));border-radius:999px}
+.history{max-height:240px;overflow:auto;padding-right:8px}
+.entry{border-left:1px solid rgba(184,245,255,.28);padding-left:12px;margin-bottom:12px;color:rgba(255,255,255,.76);font-size:14px}
+.entry b{color:#fff}
+.footerHint{margin-top:10px;font-size:12px;color:rgba(255,255,255,.54)}
+#transition{position:fixed;inset:0;background:#050912;opacity:0;pointer-events:none;transition:opacity .18s ease;z-index:2000}
+#transition.show{opacity:1}
+.zoom-soft{animation-name:zoomSoft}
+.zoom-medium{animation-name:zoomMedium}
+.pan-left{transform-origin:42% center}
+.pan-right{transform-origin:58% center}
+.pan-center{transform-origin:center center}
+@keyframes zoomSoft{from{transform:scale(1.01)}to{transform:scale(1.08)}}
+@keyframes zoomMedium{from{transform:scale(1.03)}to{transform:scale(1.11)}}
+@keyframes heroZoom{from{transform:scale(1.02)}to{transform:scale(1.09)}}
+@keyframes charFadeIn{from{opacity:0}to{opacity:1}}
+@keyframes dialogueIn{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:translateY(0)}}
+@keyframes drawerIn{from{opacity:0;transform:translateY(-8px)}to{opacity:1;transform:translateY(0)}}
+@media (max-width:960px){
+  .drawerGrid{grid-template-columns:1fr}
+  .banner{height:540px}
+  .charSlot.left,.charSlot.right{width:46%}
+  .charSlot img{max-height:420px}
+  .dialogueText{max-width:100%}
+}
+@media (max-width:740px){
+  #app{padding:0}
+  .shell{max-width:none}
+  .hero,.frame,.drawer{border-radius:0}
+  .topbar{flex-direction:column;align-items:stretch;padding:12px 12px 10px}
+  .controls{justify-content:flex-start}
+  .stageWrap{padding:0 0 12px}
+  .stage{border-radius:0}
+  .banner{height:470px}
+  .dialogueCard{margin:-28px 10px 12px;padding:16px;border-radius:20px}
+  .speaker{font-size:22px}
+  .dialogueText{font-size:17px}
+  .charSlot.left{left:0;width:50%}
+  .charSlot.right{right:0;width:50%}
+  .charSlot.center{width:62%}
+  .charSlot img{max-height:350px}
+  .namePlate{padding:7px 14px;font-size:12px}
+  .drawerToggle{position:relative;margin:-38px 10px 8px;display:flex;justify-content:flex-end}
+  .drawer{margin:12px 10px 0;border-radius:20px}
+}
+
+/* V17 fixes : sprites détourés + CG replacée au bon moment + personnages ancrés au bas de la bannière */
+.banner{overflow:hidden;}
+.characterLayer{
+  position:absolute;
+  inset:0;
+  display:block;
+  z-index:4;
+  pointer-events:none;
+}
+.charSlot{
+  bottom:0 !important;
+  justify-content:flex-end !important;
+  overflow:visible;
+}
+.charSlot .spriteShell{
+  position:relative;
+  width:100%;
+  display:flex;
+  align-items:flex-end;
+  justify-content:center;
+  margin:0 !important;
+  padding:0 !important;
+}
+.charSlot img{
+  position:relative !important;
+  inset:auto !important;
+  display:block !important;
+  width:100% !important;
+  height:auto !important;
+  margin:0 !important;
+  object-fit:contain !important;
+  object-position:bottom center !important;
+  animation:none !important;
+}
+.namePlate{
+  position:absolute !important;
+  left:50% !important;
+  bottom:10px !important;
+  transform:translateX(-50%) !important;
+  margin:0 !important;
+  z-index:8 !important;
+  pointer-events:none;
+}
+@media (max-width:740px){
+  .banner{height:500px !important;}
+  .charSlot img{max-height:390px !important;}
+  .namePlate{bottom:8px !important;}
+}
+
+
+/* Version 0.23 : codex accessible uniquement depuis l’écran titre */
+.codexScreen{
+  min-height:100vh;
+  padding:12px;
+}
+.codexLayout{
+  max-width:1100px;
+  margin:0 auto;
+}
+.codexHero{
+  border:1px solid var(--line);
+  background:var(--glass);
+  backdrop-filter:blur(12px);
+  border-radius:28px;
+  overflow:hidden;
+  box-shadow:var(--shadow);
+}
+.codexHero img{
+  width:100%;
+  height:min(38vh,360px);
+  object-fit:cover;
+  display:block;
+}
+.codexContent{
+  padding:26px;
+}
+.codexGrid{
+  display:grid;
+  grid-template-columns:repeat(2,minmax(0,1fr));
+  gap:14px;
+  margin-top:18px;
+}
+.codexCard{
+  border:1px solid rgba(255,255,255,.13);
+  background:rgba(255,255,255,.06);
+  border-radius:20px;
+  padding:18px;
+}
+.codexCard h3{
+  margin:0 0 8px;
+  font-size:20px;
+}
+.codexCard p{
+  margin:0;
+  color:var(--muted);
+  line-height:1.6;
+}
+@media(max-width:740px){
+  .codexScreen{padding:0;}
+  .codexHero{border-radius:0;}
+  .codexHero img{height:230px;}
+  .codexContent{padding:18px;}
+  .codexGrid{grid-template-columns:1fr;}
+}
+
+
+/* Version 0.24 : rythme direct, sans fondu d'entrée/sortie */
+#transition,
+#transition.show{
+  display:none !important;
+  opacity:0 !important;
+  transition:none !important;
+}
+.charSlot,
+.dialogueCard,
+.drawer.open,
+.heroVisual img,
+.banner > img.bannerBg{
+  animation:none !important;
+  transition:none !important;
+}
+.charSlot.inactive img,
+.charSlot.active img{
+  transition:none !important;
+}
+
+
+/* Version 0.25 : fins verrouillées par valeurs */
+.choice.locked{
+  opacity:.48;
+  cursor:not-allowed;
+  filter:grayscale(.3);
+}
+.choice.locked:hover{
+  background:rgba(255,255,255,.08);
+  transform:none;
+}
+.reqHint{
+  display:block;
+  margin-top:4px;
+  font-size:12px;
+  line-height:1.25;
+  color:rgba(184,245,255,.72);
+  font-weight:650;
+}
+.reqHint.ok{
+  color:rgba(164,255,190,.86);
+}
+.reqHint.locked{
+  color:rgba(255,205,130,.75);
+}
+.barHead span:last-child{
+  color:rgba(184,245,255,.82);
+}
+
+</style>
+</head>
+<body>
+<div id="transition"></div>
+<audio id="bgm" loop></audio>
+<div id="app"></div>
+<script>
+const ASSETS={"decor_title": "assets/images/decor_title.png", "decor_outside": "assets/images/decor_outside.png", "decor_attic": "assets/images/decor_attic.png", "decor_common": "assets/images/decor_common.png", "decor_road": "assets/images/decor_road.png", "decor_fire": "assets/images/decor_fire.png", "decor_bar": "assets/images/decor_bar.png", "decor_cellar": "assets/images/decor_cellar.png", "music_main": "assets/audio/music_main.mp3", "music_tavern": "assets/audio/music_tavern.mp3", "music_remerii": "assets/audio/music_remerii.mp3", "music_final": "assets/audio/music_final.mp3", "remerii_neutral": "assets/images/remerii_neutral.png", "remerii_side": "assets/images/remerii_side.png", "remerii_smile": "assets/images/remerii_smile.png", "remerii_stern": "assets/images/remerii_stern.png", "remerii_concerned": "assets/images/remerii_concerned.png", "remerii_casting": "assets/images/remerii_casting.png", "hylee_neutral": "assets/images/hylee_neutral.png", "hylee_sad": "assets/images/hylee_sad.png", "hylee_scared": "assets/images/hylee_scared.png", "hylee_surprised": "assets/images/hylee_surprised.png", "hylee_angry": "assets/images/hylee_angry.png", "hylee_hopeful": "assets/images/hylee_hopeful.png", "cg_ending_hand": "assets/images/cg_ending_hand.png", "cg_ending_solo": "assets/images/cg_ending_solo.png", "cg_ending_notready": "assets/images/cg_ending_notready.png", "cg_ending_cellar": "assets/images/cg_ending_cellar.png", "cg_ending_frost": "assets/images/cg_ending_frost.png", "cg_moon_tension": "assets/images/cg_moon_tension.png", "cg_ice_confrontation": "assets/images/cg_ice_confrontation.png", "cg_arcane_guardians": "assets/images/cg_arcane_guardians.png", "cg_remerii_arrival": "assets/images/cg_remerii_arrival.png", "cg_stairs_father": "assets/images/cg_stairs_father.png", "cg_final_confrontation_custom": "assets/images/cg_final_confrontation_custom.png", "cg_cellar_after_explicit": "assets/images/cg_cellar_after_explicit.png", "cg_forest_crystal": "assets/images/cg_forest_crystal.png", "video_title": "assets/video/video_title.mp4", "cg_mental_call_v23": "assets/images/cg_mental_call_v23.jpg", "cg_mirror_attic_v23": "assets/images/cg_mirror_attic_v23.jpg", "cg_luggage_v23": "assets/images/cg_luggage_v23.jpg", "cg_father_bursts_room_v23": "assets/images/cg_father_bursts_room_v23.jpg", "cg_forest_crystal_v23": "assets/images/cg_forest_crystal_v23.jpg", "cg_pendant_attic_v23": "assets/images/cg_pendant_attic_v23.jpg", "cg_dream_miraldas_v23": "assets/images/cg_dream_miraldas_v23.jpg", "decor_lake_training": "assets/images/decor_lake_training.png"};
+const SCENES={"wake": {"decor": "decor_attic", "music": "tavern", "location": "Auberge du Forestier", "title": "L’Introduction", "subtitle": "Les rêves d’étoiles", "speaker": "Narrateur", "text": "Hylee s’arrache à une nuit agitée. Dans le grenier qui lui sert de chambre, les images du rêve se défont déjà : des étoiles, des formes impossibles, des couleurs trop vives, et des voix dont l’intonation lui semble familière sans qu’elle puisse y poser un visage.", "chars": [["hylee", "sad", true]], "choices": [{"label": "Continuer", "next": "mirror", "effects": {}, "skipBridge": true}]}, "mirror": {"decor": "cg_mirror_attic_v23", "music": "tavern", "location": "Auberge du Forestier", "title": "Le miroir", "subtitle": "Ce qu’elle voit, ce qu’elle cache — Illustration CG", "speaker": "Narrateur", "text": "Elle s’habille vite, passe devant le miroir et détourne presque aussitôt les yeux. Ce reflet lui rappelle ce qu’on lui répète ici : orpheline, servante, bonne à encaisser. Pourtant, sous la honte, quelque chose résiste. Hylee sait qu’elle pourrait faire plus. Beaucoup plus.", "chars": [], "choices": [{"label": "Continuer", "next": "origin", "effects": {}, "skipBridge": true}], "cg": true}, "origin": {"decor": "cg_pendant_attic_v23", "music": "tavern", "location": "Auberge du Forestier", "title": "Le pendentif", "subtitle": "Un reste d’origine — Illustration CG", "speaker": "Narrateur", "text": "Son pendentif en forme d’étoile repose contre sa peau. C’est le seul vestige de ceux qui l’ont abandonnée enfant. Hylee ignore d’où elle vient, mais elle sait une chose : elle est différente. Sa magie doit rester cachée. Si les Sylviniens l’apprennent, ils ne viendront pas poser des questions. Ils l’emporteront.", "chars": [], "choices": [{"label": "Continuer", "next": "dream_miraldas", "effects": {}, "skipBridge": true}], "cg": true}, "dream_miraldas": {"decor": "cg_dream_miraldas_v23", "music": "tavern", "location": "Route vers Mir’Aldas", "title": "Le rêve impossible", "subtitle": "Quitter l’auberge — Illustration CG", "speaker": "Narrateur", "text": "Parfois, elle s’imagine loin d’ici, sur la route de Mir’Aldas, la cité des mages. Elle voudrait apprendre, comprendre, choisir sa vie au lieu de la subir. Puis les bruits du rez-de-chaussée la rattrapent : bols, portes, voix agacées. Le rêve se replie. La journée commence.", "chars": [], "choices": [{"label": "Continuer", "next": "kitchen", "effects": {}, "skipBridge": true}], "cg": true}, "kitchen": {"decor": "decor_bar", "music": "tavern", "location": "Cuisine de l’auberge", "title": "Le matin des ordres", "subtitle": "Père adoptif, mère silencieuse", "speaker": "Son père", "text": "« Enfin, te voilà ! En retard, comme d’habitude. Tu n’es qu’une bonne à rien, tu le sais ? » Sa mère tente à peine d’adoucir la violence. Pas pour défendre Hylee : seulement pour éviter de réveiller les clients.", "chars": [["hylee", "sad", true]], "choices": [{"label": "Baisser les yeux et obéir", "next": "service", "effects": {"discretion": 1}, "bridge": {"decor": "decor_common", "speaker": "Narrateur", "chars": [["hylee", "sad", true]], "text": "Hylee acquiesce sans un mot. C’est la réponse qui fait le moins de bruit, celle qui attire le moins de coups. Son père grogne encore, puis la chasse vers la salle. Les tables attendent. Les clients aussi."}}, {"label": "Répondre qu’elle n’a pas traîné", "next": "service", "effects": {"courage": 1, "instability": 1}, "bridge": {"decor": "decor_common", "speaker": "Son père", "chars": [["hylee", "surprised", true]], "text": "« Ne joue pas à ça avec moi. » La menace claque plus fort que la phrase d’Hylee. Sa mère baisse aussitôt les yeux. Hylee comprend qu’elle vient de gagner une minute de dignité, et peut-être de perdre la paix du soir."}}, {"label": "Chercher le regard de sa mère", "next": "service", "effects": {"suspicion": 1}, "bridge": {"decor": "decor_common", "speaker": "Narrateur", "chars": [["hylee", "sad", true]], "text": "Sa mère la regarde avec tristesse, mais son silence a la dureté d’une porte verrouillée. Hylee n’y trouve ni refuge ni courage. Elle prend un plateau et retourne parmi les clients, plus seule encore qu’au réveil."}}]}, "service": {"decor": "cg_remerii_arrival", "music": "tavern", "location": "Salle commune", "title": "La cliente en bleu", "subtitle": "Une présence qui tranche avec l’auberge — Illustration CG", "speaker": "Narrateur", "text": "Pendant qu’Hylee sert les voyageurs, une jeune femme entre dans la salle. Grande, élégante, vêtue de bleu et de motifs étoilés, elle n’a rien des paysans ni des marchands habituels. Ses yeux bleus croisent ceux d’Hylee avec un sourire qui semble déjà savoir quelque chose.", "chars": [["hylee", "surprised", true]], "choices": [{"label": "Continuer", "next": "remerii_counter", "effects": {}, "skipBridge": true}]}, "remerii_counter": {"decor": "decor_bar", "music": "remerii", "location": "Comptoir", "title": "Remerii", "subtitle": "La chambre 207", "speaker": "Remerii", "text": "« Bonjour. Je m’appelle Remerii. Je cherche un endroit où passer la nuit. Auriez-vous une chambre de libre ? » La voix est douce, polie, presque trop maîtrisée. Hylee rougit malgré elle en indiquant la chambre du premier étage.", "chars": [["hylee", "surprised", false], ["remerii", "smile", true]], "choices": [{"label": "Continuer", "next": "luggage", "effects": {}, "skipBridge": true}]}, "luggage": {"decor": "cg_luggage_v23", "music": "remerii", "location": "Comptoir", "title": "Les valises", "subtitle": "Un poids anormal — Illustration CG", "speaker": "Narrateur", "text": "Remerii paie sans discuter, puis désigne deux petites valises. Hylee les saisit… et manque de les lâcher. Leur poids n’a aucun sens. Les bagages sont trop petits pour être si lourds. Remerii, elle, observe la scène avec un amusement à peine caché.", "chars": [], "choices": [{"label": "Proposer d’aller chercher de l’aide", "next": "corridor", "effects": {"discretion": 1}, "bridge": {"decor": "decor_bar", "speaker": "Remerii", "chars": [["hylee", "sad", false], ["remerii", "stern", true]], "text": "Le sourire de Remerii disparaît. « C’est à vous que j’ai demandé. Faites un effort, on ne va pas y passer la journée. » La douceur de la cliente vient de se fendre, révélant une exigence sèche et capricieuse."}}, {"label": "Forcer sans magie jusqu’à l’escalier", "next": "corridor", "effects": {"courage": 1}, "bridge": {"decor": "decor_bar", "speaker": "Narrateur", "chars": [["hylee", "sad", false], ["remerii", "side", true]], "text": "Hylee tire sur les poignées jusqu’à sentir ses bras brûler. Remerii ne l’aide pas. Elle la laisse mesurer l’impossible, puis lève un sourcil, comme si elle attendait que la jeune servante cesse de mentir à son propre instinct."}}, {"label": "Murmurer une aide magique discrète", "next": "corridor", "effects": {"instability": 1, "trust": 1}, "bridge": {"decor": "decor_bar", "speaker": "Narrateur", "chars": [["hylee", "neutral", false], ["remerii", "smile", true]], "text": "Quelques mots à peine audibles glissent entre les lèvres d’Hylee. Les valises deviennent supportables. Remerii passe devant elle avec un sourire de satisfaction. Le piège vient de se refermer sans faire un bruit."}}], "cg": true}, "corridor": {"decor": "decor_attic", "music": "remerii", "location": "Couloir du premier étage", "title": "Chambre 207", "subtitle": "Le parfum de Remerii", "speaker": "Narrateur", "text": "Dans l’escalier, Hylee suit Remerii en silence. Un parfum floral, frais et légèrement sucré flotte derrière elle, étrange au milieu du bois humide et de la bière renversée. Devant la porte 207, Hylee murmure de nouveau quelques mots pour poser les bagages sans s’effondrer.", "chars": [["hylee", "neutral", false], ["remerii", "side", true]], "choices": [{"label": "Continuer", "next": "room_polite", "effects": {}, "skipBridge": true}]}, "room_polite": {"decor": "decor_attic", "music": "remerii", "location": "Chambre 207", "title": "Le discours poli", "subtitle": "La porte se referme", "speaker": "Hylee", "text": "« Merci d’avoir choisi l’Auberge du Forestier. Je me tiens à votre disposition pour toute demande. » Le discours est bien appris. Remerii hausse un sourcil, narquoise. « Voilà un bon discours. La magie est incluse dans le prix ? »", "chars": [["hylee", "surprised", false], ["remerii", "smile", true]], "choices": [{"label": "Nier aussitôt", "next": "ice_trap", "effects": {"discretion": 1}, "bridge": {"decor": "decor_attic", "speaker": "Remerii", "chars": [["hylee", "scared", false], ["remerii", "stern", true]], "text": "« Mauvais mensonge. » Remerii ferme la porte derrière elles. « J’avais un doute en te voyant. Alors j’ai surchargé mes sacs. Et tu m’as donné exactement ce que je cherchais. »"}}, {"label": "Supplier de ne pas prévenir les Sylviniens", "next": "ice_trap", "effects": {"trust": 1}, "bridge": {"decor": "decor_attic", "speaker": "Remerii", "chars": [["hylee", "scared", false], ["remerii", "concerned", true]], "text": "La peur d’Hylee est si immédiate que Remerii perd une fraction de son sourire. « Les Sylviniens ? Non. Te livrer serait un gâchis. » Elle ferme pourtant la porte, et l’air refroidit."}}, {"label": "Chercher une issue du regard", "next": "ice_trap", "effects": {"courage": 1, "suspicion": 1}, "bridge": {"decor": "decor_attic", "speaker": "Remerii", "chars": [["hylee", "angry", false], ["remerii", "stern", true]], "text": "Remerii suit son regard jusqu’à la porte. « Déjà en train de fuir ? » Un geste léger de sa main suffit à changer la température de la pièce. Le plancher craque sous une première morsure de givre."}}]}, "ice_trap": {"decor": "decor_attic", "music": "remerii", "location": "Chambre 207", "title": "La glace", "subtitle": "Le duel silencieux", "speaker": "Narrateur", "text": "La glace grimpe autour des jambes d’Hylee, douce et terrible à la fois. Remerii tourne autour d’elle avec une grâce presque joueuse. Quand Hylee tente d’incanter, la mage pose une main sur sa bouche. « Hop hop hop, ma belle. Vous souhaitez me fausser compagnie ? »", "chars": [["hylee", "scared", false], ["remerii", "stern", true]], "choices": [{"label": "Tenter de briser la glace par magie", "next": "ice_release", "effects": {"courage": 1, "instability": 1}, "bridge": {"decor": "decor_attic", "speaker": "Narrateur", "chars": [["hylee", "angry", true], ["remerii", "stern", false]], "text": "Hylee rassemble ce qu’il lui reste d’énergie. Le givre résiste, Remerii aussi. Le duel ne dure que quelques minutes, mais il lui vide le corps. Quand la glace cède enfin, Hylee comprend qu’elle n’a pas gagné : Remerii a relâché son sort."}}, {"label": "Demander ce que Remerii lui veut", "next": "ice_release", "effects": {"suspicion": 1}, "bridge": {"decor": "decor_attic", "speaker": "Remerii", "chars": [["hylee", "surprised", false], ["remerii", "stern", true]], "text": "« Te comprendre. Mais d’abord, je devais savoir si tu savais te défendre. » Remerii recule d’un pas. Le givre serre encore les jambes d’Hylee, mais il n’avance plus. La démonstration, elle, ne fait que commencer."}}, {"label": "Rester immobile et attendre", "next": "ice_release", "effects": {"discretion": 1}, "bridge": {"decor": "decor_attic", "speaker": "Remerii", "chars": [["hylee", "sad", false], ["remerii", "side", true]], "text": "Remerii observe son silence avec curiosité. « Tu as appris à survivre en ne bougeant pas. C’est utile. Mais ce n’est pas vivre. » Elle relâche légèrement le sort, assez pour qu’Hylee sente la différence."}}]}, "ice_release": {"decor": "cg_ice_confrontation", "music": "remerii", "location": "Chambre 207", "title": "La chambre gelée", "subtitle": "L’offre de Remerii — Chambre figée", "speaker": "Remerii", "text": "« Maintenant que je suis sûre que tu ne t’échapperas pas, laisse-moi te montrer pourquoi je ne te vendrai pas aux Sylviniens. » La glace se répand sur le sol, les murs, les meubles. La chambre entière devient un écrin blanc, et l’air sent l’écorce de citron.", "chars": [["hylee", "surprised", false], ["remerii", "casting", true]], "choices": [{"label": "Continuer", "next": "offer", "effects": {}, "skipBridge": true}]}, "offer": {"decor": "decor_attic", "music": "remerii", "location": "Chambre 207", "title": "Un gâchis", "subtitle": "Observer, comprendre, peut-être enseigner", "speaker": "Remerii", "text": "« Je veux t’observer. Comprendre d’où te vient cette facilité. Et si ton potentiel est réel… je pourrais peut-être t’apprendre deux ou trois choses. » Hylee touche la glace du bout des doigts. Remerii est humaine. Remerii est mage. Et soudain, Hylee n’est peut-être plus seule.", "chars": [["hylee", "hopeful", false], ["remerii", "smile", true]], "choices": [{"label": "Demander comment une humaine peut faire cela", "next": "stairs_father", "effects": {"hope": 1, "suspicion": 1}, "bridge": {"decor": "decor_attic", "speaker": "Remerii", "chars": [["hylee", "surprised", false], ["remerii", "side", true]], "text": "« J’ai mes raisons. Tu en sauras plus en temps voulu. » Remerii dissipe son sort avec une aisance insolente. Puis elle incline la tête vers la porte. « En attendant, on te cherche. »"}}, {"label": "Accepter d’écouter, sans promettre de confiance", "next": "stairs_father", "effects": {"trust": 1}, "bridge": {"decor": "decor_attic", "speaker": "Remerii", "chars": [["hylee", "neutral", false], ["remerii", "smile", true]], "text": "Remerii paraît satisfaite. « Sage réponse. La confiance pleine et entière est un luxe pour les imbéciles. » Elle efface la glace, comme si la pièce n’avait jamais été transformée."}}, {"label": "Rester méfiante et quitter la chambre", "next": "stairs_father", "effects": {"discretion": 1, "suspicion": 1}, "bridge": {"decor": "decor_attic", "speaker": "Narrateur", "chars": [["hylee", "sad", false], ["remerii", "side", true]], "text": "Hylee recule vers la porte. Remerii ne la retient pas. « Garde tes doutes. Ils t’empêcheront peut-être de mourir. » Derrière Hylee, la glace fond sans laisser une goutte."}}]}, "stairs_father": {"decor": "cg_stairs_father", "music": "tavern", "location": "Escalier de l’auberge", "title": "L’homme en bas des marches", "subtitle": "Le martinet — Illustration CG", "speaker": "Narrateur", "text": "En descendant, Hylee distingue son père adoptif en bas des marches. Les bras croisés. Le pied impatient. Le martinet accroché à la ceinture. Il n’a pas besoin de parler. Son regard désigne la cuisine, puis la cave.", "chars": [["hylee", "scared", true]], "choices": [{"label": "Continuer", "next": "cellar_descent", "effects": {}, "skipBridge": true}]}, "cellar_descent": {"decor": "decor_cellar", "music": "tavern", "location": "La cave", "title": "Le châtiment", "subtitle": "Une injustice ancienne", "speaker": "Narrateur", "text": "L’odeur du métal, du vin et de la rouille accueille Hylee avant même les chaînes. Sa mère l’a vue passer. Elle n’a rien dit. Hylee s’agenouille, ferme les yeux et contient ce qui monte en elle : la douleur, la rage, et ce froid qui pourrait tout arrêter.", "chars": [["hylee", "sad", true]], "choices": [{"label": "Endurer et retenir le froid", "next": "cellar_after", "effects": {"discretion": 1}, "bridge": {"decor": "decor_cellar", "speaker": "Narrateur", "chars": [["hylee", "sad", true]], "text": "Elle serre les dents jusqu’au sang et ne donne à son père ni cri ni victoire. Le froid reste en elle, comprimé, dangereux. Quand tout s’arrête enfin, Hylee tombe presque contre la pierre humide."}}, {"label": "Laisser les chaînes geler malgré elle", "next": "cellar_after", "effects": {"instability": 1}, "bridge": {"decor": "decor_cellar", "speaker": "Narrateur", "chars": [["hylee", "scared", true]], "text": "Elle ne lance aucun sort volontaire. Pourtant, lorsque le silence revient, les chaînes sont blanchies par le givre. Ses poignets brûlent de froid. La magie a répondu sans attendre son accord."}}, {"label": "Céder à l’envie de le geler", "next": "ending_cellar", "effects": {"instability": 2, "courage": 2}, "bridge": {"decor": "cg_ending_cellar", "speaker": "Narrateur", "chars": [], "text": "Cette fois, l’idée noire ne reste pas une idée. Le froid quitte Hylee avant sa prudence, avant sa peur, avant son humanité. La cave devient le premier lieu où elle cesse de subir… et le premier lieu où elle se perd."}}]}, "cellar_after": {"decor": "cg_cellar_after_explicit", "music": "tavern", "location": "La cave", "title": "Après les coups", "subtitle": "Se relever quand même — Illustration CG", "speaker": "Narrateur", "text": "Il part sans un mot. Hylee reste seule sur le sol, exténuée, le dos zébré de plaies ouvertes et de sang séché. Chaque respiration lui arrache une douleur brûlante. Tremblante, elle se force pourtant à se rhabiller. On l’attend déjà pour reprendre le travail. Même la souffrance, ici, n’a pas droit à une pause.", "chars": [["hylee", "sad", true]], "choices": [{"label": "Continuer", "next": "remerii_watches", "effects": {}, "skipBridge": true}]}, "remerii_watches": {"decor": "decor_common", "music": "remerii", "location": "Salle commune", "title": "Les jours de silence", "subtitle": "Remerii observe", "speaker": "Narrateur", "text": "Depuis son arrivée, Remerii reste en retrait. Elle commande un thé qu’elle boit à peine et lit un livre ancien aux lettres indéchiffrables. Chaque fois qu’Hylee croise son regard, Remerii semble sur le point de parler, puis l’ignore royalement.", "chars": [["hylee", "neutral", false], ["remerii", "side", true]], "choices": [{"label": "Continuer", "next": "feather", "effects": {}, "skipBridge": true}]}, "feather": {"decor": "decor_common", "music": "remerii", "location": "Salle commune", "title": "La plume", "subtitle": "Un objet chaud", "speaker": "Narrateur", "text": "Un soir, en nettoyant les tables, Hylee trouve une plume sous la chaise de Remerii. L’objet diffuse une chaleur étrange, presque vivante. Elle sait qu’il appartient à la mage. Elle sait aussi que rien, avec Remerii, ne tombe vraiment par accident.", "chars": [["hylee", "surprised", true]], "choices": [{"label": "La garder pour la rendre le lendemain", "next": "ring", "effects": {"hope": 1, "trust": 1}, "bridge": {"decor": "decor_common", "speaker": "Remerii", "chars": [["hylee", "neutral", false], ["remerii", "smile", true]], "text": "Le lendemain, Remerii l’appelle avec un sourire tranquille. « Je crois que vous avez quelque chose qui m’appartient. » Quand leurs doigts se frôlent, la chaleur de la plume remonte le bras d’Hylee."}}, {"label": "La rendre aussitôt", "next": "ring", "effects": {"trust": 2}, "bridge": {"decor": "decor_common", "speaker": "Remerii", "chars": [["hylee", "hopeful", false], ["remerii", "smile", true]], "text": "Remerii récupère la plume avec un bref éclat d’intérêt. « Honnête. Même quand personne ne regarde. » Le compliment reste dans l’esprit d’Hylee plus longtemps qu’elle ne voudrait l’admettre."}}, {"label": "La cacher pour comprendre ce qu’elle fait", "next": "ring", "effects": {"suspicion": 1}, "bridge": {"decor": "decor_common", "speaker": "Narrateur", "chars": [["hylee", "surprised", false], ["remerii", "side", true]], "text": "Hylee garde la plume sur elle toute la nuit. Au matin, Remerii n’a pas besoin de fouiller ni d’accuser. Son sourire suffit à prouver qu’elle savait exactement où l’objet finirait."}}]}, "ring": {"decor": "decor_bar", "music": "remerii", "location": "Salle commune", "title": "La bague", "subtitle": "Un frisson glacé", "speaker": "Narrateur", "text": "Plus tard, Remerii laisse tomber une bague près de sa table. Hylee la ramasse machinalement. Un frisson glacé traverse aussitôt sa main, puis son bras, comme si quelque chose en elle venait de s’étirer au réveil.", "chars": [["hylee", "surprised", false], ["remerii", "smile", true]], "choices": [{"label": "Avouer qu’elle a senti quelque chose", "next": "tea", "effects": {"trust": 1, "hope": 1}, "bridge": {"decor": "decor_fire", "speaker": "Remerii", "chars": [["hylee", "surprised", false], ["remerii", "concerned", true]], "text": "Remerii ne se moque pas. « Beaucoup de gens ignorent ce qu’ils portent en eux jusqu’à ce qu’on leur montre. » Elle range la bague. Le soir même, elle demande à Hylee de s’asseoir avec elle."}}, {"label": "Prétendre que tout va bien", "next": "tea", "effects": {"discretion": 1, "suspicion": 1}, "bridge": {"decor": "decor_fire", "speaker": "Narrateur", "chars": [["hylee", "neutral", false], ["remerii", "side", true]], "text": "Le mensonge tombe à plat. Remerii le laisse vivre, ce qui est presque pire. Toute la journée, Hylee sent une tension dans ses mains. Le soir venu, la mage lui tend une tasse de thé."}}, {"label": "Demander si Remerii la teste encore", "next": "tea", "effects": {"courage": 1, "suspicion": 2}, "bridge": {"decor": "decor_fire", "speaker": "Remerii", "chars": [["hylee", "angry", false], ["remerii", "smile", true]], "text": "« Oui. » Remerii ne cherche même pas à le nier. « Et tu viens encore de réussir. » Elle désigne la chaise en face d’elle. Cette fois, Hylee comprend qu’on ne parlera plus à demi-mot."}}]}, "tea": {"decor": "decor_fire", "music": "remerii", "location": "Au coin du feu", "title": "La tasse de thé", "subtitle": "Ce qui cherche à sortir", "speaker": "Remerii", "text": "« Que ressens-tu physiquement ? De l’inconfort ? Une douleur ? » Hylee fixe ses mains. Ce n’est ni l’un ni l’autre. Plutôt la sensation de quelque chose qui cherche à s’échapper depuis le plus profond d’elle-même.", "chars": [["hylee", "sad", false], ["remerii", "concerned", true]], "choices": [{"label": "Décrire honnêtement la sensation", "next": "invitation", "effects": {"trust": 2}, "bridge": {"decor": "decor_fire", "speaker": "Remerii", "chars": [["hylee", "neutral", false], ["remerii", "smile", true]], "text": "Remerii hoche lentement la tête. « Comme lorsqu’on s’étire au réveil ? » Hylee relève les yeux, surprise par la justesse de l’image. La mage vient de poser des mots sur ce qu’elle croyait indicible."}}, {"label": "Dire qu’elle ne sait pas", "next": "invitation", "effects": {"discretion": 1}, "bridge": {"decor": "decor_fire", "speaker": "Remerii", "chars": [["hylee", "sad", false], ["remerii", "side", true]], "text": "« Tu sais. Tu as seulement appris à ne pas le dire. » Remerii ne force pas davantage. Sa voix se fait plus basse, moins joueuse. « Alors je vais te poser une autre question. »"}}, {"label": "Demander pourquoi Remerii s’intéresse à elle", "next": "invitation", "effects": {"suspicion": 1, "hope": 1}, "bridge": {"decor": "decor_fire", "speaker": "Remerii", "chars": [["hylee", "surprised", false], ["remerii", "smile", true]], "text": "« Parce que ta place n’est pas ici. » La réponse arrive sans hésitation. Remerii observe la salle, les tables, les traces de coups cachées sous le tissu. « Et parce que personne d’autre ne viendra te le dire. »"}}]}, "invitation": {"decor": "decor_fire", "music": "remerii", "location": "Au coin du feu", "title": "La proposition", "subtitle": "Une clairière derrière l’auberge", "speaker": "Remerii", "text": "« Crois-tu vraiment être destinée à servir les deux créatures hideuses qui te tiennent lieu de parents ? Je peux t’aider, Hylee. Mais il faudra me faire confiance. Retrouve-moi ce soir, après la tombée de la nuit, dans la clairière derrière l’auberge, près du lac. »", "chars": [["hylee", "hopeful", false], ["remerii", "smile", true]], "choices": [{"label": "Aller au rendez-vous", "next": "night_meeting", "effects": {}, "skipBridge": true}]}, "night_meeting": {"decor": "cg_forest_crystal_v23", "music": "remerii", "location": "Clairière du lac", "title": "Le cristal", "subtitle": "Première leçon — Illustration CG", "speaker": "Remerii", "text": "Remerii l’attend avec une lanterne et un sourire chaleureux. Elle lui tend un cristal translucide. « Prends ceci et concentre-toi. Essaie de ressentir l’énergie qui t’entoure. » D’abord, rien. Puis une faible lumière s’allume au cœur du cristal.", "chars": [], "choices": [{"label": "Continuer", "next": "training_days", "effects": {}, "skipBridge": true}], "cg": true}, "training_days": {"decor": "decor_road", "music": "remerii", "location": "Clairière du lac", "title": "Cinq jours", "subtitle": "La lumière tient", "speaker": "Narrateur", "text": "Les jours suivants, Remerii donne à Hylee de petites tâches : maintenir la lumière, déplacer de petits objets, percevoir les émotions. À chaque réussite, Hylee grandit un peu. À chaque sourire de Remerii, elle se demande aussi ce que la mage calcule.", "chars": [["hylee", "hopeful", false], ["remerii", "side", true]], "choices": [{"label": "Continuer", "next": "illusion_father", "effects": {}, "skipBridge": true}]}, "illusion_father": {"decor": "cg_moon_tension", "music": "remerii", "location": "Clairière du lac", "title": "Le père dans les feuillages", "subtitle": "Le test cruel — Illustration CG", "speaker": "Narrateur", "text": "Le cinquième soir, Hylee arrive la première. Le cristal brille dans sa main sans effort. Des pas brisent soudain les feuillages. Son père adoptif surgit, martinet en main, les yeux injectés de sang. « Tu te crois libre ? Tu m’appartiens ! »", "chars": [], "choices": [{"label": "Geler ses jambes par réflexe", "next": "illusion_reveal", "effects": {"instability": 1, "courage": 1}, "bridge": {"decor": "decor_road", "speaker": "Narrateur", "chars": [["hylee", "scared", true]], "text": "Hylee ne pense plus. Ses doigts s’ouvrent, et une onde glacée frappe l’homme de plein fouet. Ses pieds se figent. Sa peau rougit puis blêmit. Le cristal, pourtant, continue de luire dans sa main."}}, {"label": "Reculer en gardant le cristal stable", "next": "illusion_reveal", "effects": {"discretion": 1, "trust": 1}, "bridge": {"decor": "decor_road", "speaker": "Narrateur", "chars": [["hylee", "surprised", true]], "text": "Hylee recule, tremblante, mais garde les doigts fermés autour du cristal. La lumière ne vacille pas. Elle sent le froid monter, prêt à jaillir, et comprend à quel point il lui serait facile de céder."}}, {"label": "Observer l’incohérence de la scène", "next": "illusion_reveal", "effects": {"suspicion": 2}, "bridge": {"decor": "decor_road", "speaker": "Narrateur", "chars": [["hylee", "neutral", true]], "text": "Une pensée fend la panique : comment l’a-t-il suivie ici ? Pourquoi ses pas ne marquent-ils pas la boue ? Le cristal éclaire le visage de l’homme, et Hylee y perçoit enfin quelque chose de faux."}}, {"label": "Lancer tout le froid qu’elle retient", "next": "illusion_reveal", "effects": {"instability": 2, "courage": 1}, "bridge": {"decor": "decor_road", "speaker": "Narrateur", "chars": [["hylee", "angry", true]], "text": "La peur devient colère, la colère devient froid. Hylee ne se contente pas d’arrêter l’homme : elle veut l’effacer de son chemin. La magie répond avec une facilité terrifiante."}}], "cg": true}, "illusion_reveal": {"decor": "decor_road", "music": "remerii", "location": "Clairière du lac", "title": "L’illusion se dissipe", "subtitle": "La leçon de Remerii", "speaker": "Remerii", "text": "La silhouette du père adoptif se défait en neige. Remerii sort de l’ombre avec un sourire satisfait. « Impressionnant. Tout cela vient de toi. Je t’ai simplement montré ce dont tu es capable. Mais s’il avait été réel, Hylee… tu aurais pu le tuer. »", "chars": [["hylee", "surprised", false], ["remerii", "concerned", true]], "choices": [{"label": "Refuser d’admettre qu’elle aurait pu le tuer", "next": "arcane_vision", "effects": {"courage": 1}, "bridge": {"decor": "decor_road", "speaker": "Remerii", "chars": [["hylee", "angry", false], ["remerii", "stern", true]], "text": "« L’orgueil est dangereux chez les faibles, mortel chez les mages. » Remerii ne hausse pas la voix. Elle n’en a pas besoin. Hylee baisse les yeux malgré elle, touchée là où elle voulait se croire forte."}}, {"label": "Accuser Remerii de manipulation", "next": "arcane_vision", "effects": {"suspicion": 2}, "bridge": {"decor": "decor_road", "speaker": "Remerii", "chars": [["hylee", "angry", false], ["remerii", "side", true]], "text": "« Oui. » Remerii assume le mot sans détour. « Parce que le monde te manipulera avec moins de délicatesse que moi. Je préfère que ta première erreur se fasse face à une illusion. »"}}, {"label": "Admettre qu’elle a peur d’elle-même", "next": "arcane_vision", "effects": {"trust": 1, "hope": 1}, "bridge": {"decor": "decor_road", "speaker": "Remerii", "chars": [["hylee", "sad", false], ["remerii", "concerned", true]], "text": "Cette fois, Remerii ne sourit pas. Elle pose une main froide sur l’épaule d’Hylee. « Alors tu peux apprendre. Ceux qui n’ont jamais peur de leur pouvoir sont ceux qui finissent par le subir. »"}}]}, "arcane_vision": {"decor": "cg_arcane_guardians", "music": "remerii", "location": "Vision d’arcanes", "title": "Le cycle", "subtitle": "Le cycle — Vision cosmique", "speaker": "Narrateur", "text": "Remerii referme ses mains autour de celles d’Hylee et du cristal. L’obscurité se change en ciel d’étoiles, traversé par une nébuleuse violacée. La force qui s’en dégage est belle, immense, presque tendre. Elle donne envie d’avancer. De toucher. De prendre.", "chars": [["hylee", "hopeful", false], ["remerii", "casting", true]], "choices": [{"label": "Reculer devant la tentation", "next": "remerii_offer", "effects": {"discretion": 1, "trust": 1}, "bridge": {"decor": "decor_road", "speaker": "Remerii", "chars": [["hylee", "neutral", false], ["remerii", "smile", true]], "text": "Remerii sourit, satisfaite. « Bien. Ce que tu refuses de toucher aujourd’hui ne te possédera pas demain. » La nébuleuse continue pourtant d’appeler Hylee, douce comme une promesse."}}, {"label": "Tendre la main vers la nébuleuse", "next": "remerii_offer", "effects": {"instability": 1, "hope": 1}, "bridge": {"decor": "decor_road", "speaker": "Narrateur", "chars": [["hylee", "surprised", false], ["remerii", "casting", true]], "text": "Hylee fait un pas sans s’en rendre compte et bouscule Remerii hors de la vision. La mage rit doucement, moqueuse mais pas cruelle. « Voilà. Tu comprends maintenant pourquoi c’est dangereux. »"}}, {"label": "Demander ce que Remerii attend d’elle", "next": "remerii_offer", "effects": {"suspicion": 1, "trust": 1}, "bridge": {"decor": "decor_road", "speaker": "Remerii", "chars": [["hylee", "neutral", false], ["remerii", "side", true]], "text": "« Rien que tu ne choisisses pas. Mais tout choix aura un prix. » Remerii effleure la nébuleuse du bout des doigts. « Moi, je peux seulement t’apprendre à lire l’étiquette avant de boire le poison. »"}}]}, "remerii_offer": {"decor": "decor_road", "music": "remerii", "location": "Clairière du lac", "title": "Avec ou sans toi", "subtitle": "La décision remise à plus tard", "speaker": "Remerii", "text": "« Une vie ne te suffira pas à découvrir tous ces secrets. Mais je peux t’apprendre ce que je sais. Je pars dans quelques jours, Hylee. Avec ou sans toi. » Quand la vision s’éteint, Hylee est seule dans la clairière, le cristal brillant encore dans sa main.", "chars": [["hylee", "sad", false], ["remerii", "smile", true]], "choices": [{"label": "Continuer", "next": "days_without_remerii", "effects": {}, "skipBridge": true}]}, "days_without_remerii": {"decor": "decor_attic", "music": "tavern", "location": "Grenier de l’auberge", "title": "L’absence", "subtitle": "La peur d’être abandonnée encore", "speaker": "Narrateur", "text": "Les jours passent sans signe de Remerii. Hylee se dit qu’elle est partie. Que c’était prévisible. Ce ne serait pas la première fois qu’on l’abandonne. Pourtant, l’idée de ne plus jamais entendre sa voix lui serre la gorge.", "chars": [["hylee", "sad", true]], "choices": [{"label": "Continuer", "next": "mental_call", "effects": {}, "skipBridge": true}]}, "mental_call": {"decor": "cg_mental_call_v23", "music": "final", "location": "Grenier de l’auberge", "title": "La voix", "subtitle": "Tu es prête, Hylee — Illustration CG", "speaker": "Remerii", "text": "« Tu es prête, Hylee. Quitte cet endroit. Je t’attends. » La voix résonne directement dans l’esprit de la jeune fille. Elle se redresse, le cristal serré dans ses mains. Puis la porte s’ouvre violemment.", "chars": [], "choices": [{"label": "Continuer", "next": "father_grabs", "effects": {}, "skipBridge": true}], "cg": true}, "father_grabs": {"decor": "cg_father_bursts_room_v23", "music": "final", "location": "Grenier de l’auberge", "title": "La fuite empêchée", "subtitle": "Tu m’appartiens — Illustration CG", "speaker": "Son père", "text": "« Tu penses pouvoir m’échapper ? Cette sorcière t’a monté la tête ! Tu es à moi, tu m’entends ? » Il l’attrape par le bras et la traîne hors de la chambre. La peur revient, mais cette fois, quelque chose d’autre monte avec elle.", "chars": [], "choices": [{"label": "Se débattre et appeler Remerii intérieurement", "next": "final_confrontation", "effects": {"hope": 1}, "bridge": {"decor": "decor_common", "speaker": "Narrateur", "chars": [["hylee", "scared", true]], "text": "Hylee se débat, mais sa voix reste coincée dans sa gorge. Alors elle pense à Remerii, au cristal, à la clairière. La salle commune apparaît en bas des marches, et une ombre s’y détache déjà."}}, {"label": "Serrer le cristal et attendre l’ouverture", "next": "final_confrontation", "effects": {"discretion": 1}, "bridge": {"decor": "decor_common", "speaker": "Narrateur", "chars": [["hylee", "neutral", true]], "text": "Elle serre le cristal jusqu’à s’en faire mal. Ne pas céder trop tôt. Ne pas exploser. Attendre. Son père la traîne dans la salle commune, et l’air y est soudain plus froid qu’il ne devrait l’être."}}, {"label": "Laisser le froid monter dans ses doigts", "next": "final_confrontation", "effects": {"instability": 1, "courage": 1}, "bridge": {"decor": "decor_common", "speaker": "Narrateur", "chars": [["hylee", "angry", true]], "text": "Le froid court déjà dans ses doigts quand ils atteignent la salle. Hylee sent qu’il suffirait d’un geste. Puis une voix basse traverse la pièce avant que son pouvoir ne jaillisse."}}], "cg": true}, "final_confrontation": {"decor": "cg_final_confrontation_custom", "music": "final", "location": "Salle commune", "title": "La décision", "subtitle": "La main tendue — Illustration CG", "speaker": "Remerii", "text": "Remerii tend la main. Derrière Hylee, son père hurle encore, mais sa voix semble lointaine. Le froid pulse dans ses doigts. Le cristal répond contre sa peau. À cet instant, toutes les petites décisions prises depuis le matin reviennent en elle : ce qu’elle a caché, ce qu’elle a osé, ce qu’elle a cru, ce qu’elle a refusé. Certaines routes ne s’ouvrent qu’à la Hylee que le joueur a façonnée.", "chars": [["hylee", "hopeful", false], ["remerii", "stern", true]], "choices": [{"label": "Prendre la main de Remerii", "next": "ending_hand", "effects": {"trust": 1, "hope": 2}, "bridge": {"decor": "cg_ending_hand", "speaker": "Hylee", "chars": [], "text": "Les doigts d’Hylee tremblent, puis se referment sur ceux de Remerii. « Je ne veux plus rester ici. » Remerii hoche la tête, presque tendre. « Je sais. Va préparer tes affaires. J’ai deux ou trois choses à régler. »"}, "requires": {"trust": 5}, "lockHint": "Confiance 5/5 requise"}, {"label": "Fuir seule avec le cristal", "next": "ending_solo", "effects": {"courage": 2, "suspicion": 1}, "bridge": {"decor": "cg_ending_solo", "speaker": "Narrateur", "chars": [], "text": "La main de Remerii reste suspendue. Hylee recule, serre le cristal et choisit la porte plutôt que la promesse. Remerii pourrait l’arrêter. Elle ne le fait pas. La liberté, cette fois, a le goût de la solitude."}, "requires": {"courage": 5, "suspicion": 5}, "lockHint": "Courage 5/5 + Méfiance 5/5 requis"}, {"label": "Laisser le froid éclater contre son père", "next": "ending_frost", "effects": {"instability": 2, "courage": 1}, "bridge": {"decor": "cg_ending_frost", "speaker": "Narrateur", "chars": [], "text": "Le regard de son père rallume tout. Hylee ne voit plus la main tendue, seulement l’homme qui l’a brisée. Le froid jaillit avant les mots. Remerii tend la main vers elle, mais la magie est déjà partie."}, "requires": {"instability": 5}, "lockHint": "Instabilité 5/5 requise"}, {"label": "Rester paralysée", "next": "ending_notready", "effects": {"suspicion": 1}, "bridge": {"decor": "cg_ending_notready", "speaker": "Remerii", "chars": [], "text": "Hylee regarde la main sans parvenir à bouger. Les chaînes ne sont plus à ses poignets, mais elles tiennent encore son esprit. Remerii comprend. Sa main retombe. « Alors pas ce soir. »"}, "lockHint": "Toujours disponible"}]}, "ending_hand": {"decor": "cg_ending_hand", "music": "final", "location": "Fin de démo", "title": "La main tendue", "subtitle": "Fin canonique — Illustration de fin", "speaker": "Narrateur", "text": "Hylee quitte l’Auberge du Forestier aux côtés de Remerii. Derrière elle, la servitude devient un souvenir encore brûlant. Elle ignore ce que la mage fera de l’ivrogne après son départ, mais elle sait une chose : pour la première fois, elle avance.<br><br><b>Merci d’avoir joué à cette démo.</b> Cette route n’est qu’un éclat parmi les possibles. Recommence l’introduction pour explorer les autres choix et débloquer les autres fins.", "chars": [], "choices": [], "cg": true}, "ending_solo": {"decor": "cg_ending_solo", "music": "final", "location": "Fin de démo", "title": "Le cristal volé", "subtitle": "Fin ambiguë — Illustration de fin", "speaker": "Narrateur", "text": "Hylee fuit seule dans la nuit, le cristal serré contre elle. Elle a échappé à l’auberge, mais pas à la peur, ni à l’inconnu. La route de Mir’Aldas existe peut-être quelque part devant elle. Sans Remerii, elle devra la trouver dans le noir.<br><br><b>Merci d’avoir joué à cette démo.</b> Cette route n’est qu’un éclat parmi les possibles. Recommence l’introduction pour explorer les autres choix et débloquer les autres fins.", "chars": [], "choices": [], "cg": true}, "ending_frost": {"decor": "cg_ending_frost", "music": "final", "location": "Fin de démo", "title": "La fille de glace", "subtitle": "Fin sombre — Illustration de fin", "speaker": "Narrateur", "text": "Le froid envahit la salle commune. Remerii intervient, mais trop tard pour empêcher Hylee de comprendre ce qu’elle peut devenir sans maîtrise. La liberté arrachée par la violence laisse derrière elle un silence plus lourd que les chaînes.<br><br><b>Merci d’avoir joué à cette démo.</b> Cette route n’est qu’un éclat parmi les possibles. Recommence l’introduction pour explorer les autres choix et débloquer les autres fins.", "chars": [], "choices": [], "cg": true}, "ending_notready": {"decor": "cg_ending_notready", "music": "final", "location": "Fin de démo", "title": "Pas encore prête", "subtitle": "Fin d’attente — Illustration de fin", "speaker": "Narrateur", "text": "Remerii disparaît dans la nuit, et Hylee reste devant la porte ouverte sans avoir franchi le seuil. L’occasion n’est pas morte, mais elle s’éloigne. Certaines prisons ne ferment pas leurs portes : elles attendent qu’on renonce à sortir.<br><br><b>Merci d’avoir joué à cette démo.</b> Cette route n’est qu’un éclat parmi les possibles. Recommence l’introduction pour explorer les autres choix et débloquer les autres fins.", "chars": [], "choices": [], "cg": true}, "ending_cellar": {"decor": "cg_ending_cellar", "music": "final", "location": "Fin de démo", "title": "Le froid sans retour", "subtitle": "Fin alternative sombre — Illustration de fin", "speaker": "Narrateur", "text": "La cave garde le secret du premier vrai dérapage d’Hylee. Elle a cessé d’être seulement une victime, mais elle n’est pas devenue libre pour autant. Au-dessus d’elle, l’auberge continue de vivre, sans savoir qu’un hiver vient de naître sous ses fondations.<br><br><b>Merci d’avoir joué à cette démo.</b> Cette route n’est qu’un éclat parmi les possibles. Recommence l’introduction pour explorer les autres choix et débloquer les autres fins.", "chars": [], "choices": [], "cg": true}};
+const ZOOMMAP={"wake": "zoom-soft pan-center", "mirror": "zoom-medium pan-center", "origin": "zoom-medium pan-center", "dream_miraldas": "zoom-soft pan-center", "kitchen": "zoom-soft pan-left", "service": "zoom-soft pan-right", "remerii_counter": "zoom-soft pan-left", "luggage": "zoom-medium pan-center", "corridor": "zoom-medium pan-right", "room_polite": "zoom-medium pan-center", "ice_trap": "zoom-medium pan-right", "ice_release": "zoom-medium pan-center", "offer": "zoom-soft pan-center", "stairs_father": "zoom-soft pan-left", "cellar_descent": "zoom-medium pan-left", "cellar_after": "zoom-soft pan-left", "remerii_watches": "zoom-soft pan-right", "feather": "zoom-soft pan-right", "ring": "zoom-soft pan-left", "tea": "zoom-soft pan-center", "invitation": "zoom-soft pan-right", "night_meeting": "zoom-medium pan-center", "training_days": "zoom-soft pan-center", "illusion_father": "zoom-medium pan-left", "illusion_reveal": "zoom-medium pan-center", "arcane_vision": "zoom-soft pan-center", "remerii_offer": "zoom-soft pan-center", "days_without_remerii": "zoom-soft pan-right", "mental_call": "zoom-medium pan-center", "father_grabs": "zoom-medium pan-center", "final_confrontation": "zoom-medium pan-right", "ending_hand": "zoom-soft pan-center", "ending_solo": "zoom-soft pan-right", "ending_frost": "zoom-medium pan-center", "ending_notready": "zoom-soft pan-center", "ending_cellar": "zoom-medium pan-left"};
+const VALUE_MAX=5;
+const STATE0={started:false,screen:'title',scene:'wake',courage:0,discretion:0,trust:0,suspicion:0,instability:0,hope:0,history:[],showCodex:false,showDrawer:false,currentTrack:'main',musicUnlocked:false,muted:false,volume:0.55,reaction:null,transitioning:false};
+let state=JSON.parse(JSON.stringify(STATE0));
+const statsMeta={courage:'Courage',discretion:'Discrétion',trust:'Confiance envers Remerii',suspicion:'Méfiance envers Remerii',instability:'Instabilité magique',hope:'Espoir'};
+function sceneObj(){if(state.scene==='__reaction')return{decor:state.reaction.decor,music:state.reaction.music,location:state.reaction.location||'Transition',title:state.reaction.title||'Transition',subtitle:state.reaction.subtitle||'La conséquence du choix',speaker:state.reaction.speaker||'Narrateur',text:state.reaction.text||'',chars:state.reaction.chars||[],reaction:true,choices:[{label:'Continuer',next:state.reaction.next,effects:{}}]};return SCENES[state.scene];}
+function musicName(k){return {main:'Chroniques de Sylvinia Main Title',tavern:'Taverne du Forestier',remerii:'Thème de Remerii',final:'Départ de Hylee',epilogue:'Une nuit entre deux étoiles'}[k]||k;}
+function updateMusic(force=false){const bgm=document.getElementById('bgm');const sc=state.started?sceneObj():null;const wanted=state.started?(sc.music||'tavern'):'main';bgm.volume=state.muted?0:state.volume;if(force||state.currentTrack!==wanted){state.currentTrack=wanted;bgm.src=ASSETS['music_'+wanted];}if((state.musicUnlocked||!state.started)&&!state.muted){bgm.play().catch(()=>{});}}
+function setVolume(v){state.volume=Number(v);document.getElementById('bgm').volume=state.muted?0:state.volume;}
+function toggleMute(){state.muted=!state.muted;updateMusic(true);render();}
+function startDemo(){state.started=true;state.musicUnlocked=true;updateMusic(true);render();}
+function startTitleMusic(){state.musicUnlocked=true;state.muted=false;updateMusic(true);render();}
+function restart(){state=JSON.parse(JSON.stringify(STATE0));state.screen='title';state.musicUnlocked=true;state.muted=false;state.currentTrack=null;updateMusic(true);render();setTimeout(()=>updateMusic(true),30);}
+function toggleCodex(){state.showCodex=!state.showCodex;state.showDrawer=true;render();}
+function toggleDrawer(){state.showDrawer=!state.showDrawer;render();}
+function applyEffects(eff){for(const [k,v] of Object.entries(eff||{})){state[k]=Math.max(0,Math.min(VALUE_MAX,(state[k]||0)+v));}}
+function pushHistory(sc,label){state.history.push({title:sc.title||sc.location,choice:label});}
+function transitionTo(cb,duration=180){if(state.transitioning)return;state.transitioning=true;const stage=document.querySelector('.stage');if(stage){stage.classList.add('fadeout');}window.setTimeout(()=>{cb();state.transitioning=false;render();},duration);}
+function choose(i){const sc=sceneObj();const ch=sc.choices[i];if(!ch||!meetsRequires(ch.requires))return;const duration=ch.longFade?1400:180;transitionTo(()=>{if(state.scene==='__reaction'){state.scene=ch.next;state.reaction=null;return;}if(!ch.skipBridge){pushHistory(sc,ch.label);}applyEffects(ch.effects);if(ch.skipBridge){state.scene=ch.next;state.reaction=null;return;}const b=ch.bridge||{};state.reaction={decor:b.decor||sc.decor,music:b.music||sc.music,chars:b.chars||sc.chars,next:ch.next,title:b.title||'Transition',subtitle:b.subtitle||'La conséquence du choix',speaker:b.speaker||'Narrateur',text:b.text||'Le choix produit une conséquence immédiate, puis la scène poursuit son cours.'};state.scene='__reaction';},duration);}
+function meetsRequires(req){if(!req)return true;return Object.entries(req).every(([k,v])=>(state[k]||0)>=v);}
+function reqText(req,lockHint){if(!req)return lockHint?lockHint:'';return Object.entries(req).map(([k,v])=>`${statsMeta[k]||k} ${Math.min(state[k]||0,VALUE_MAX)}/${v}`).join(' · ');}
+function renderChoice(c,i){const ok=meetsRequires(c.requires);const hint=reqText(c.requires,c.lockHint);const hintHtml=hint?`<span class="reqHint ${ok?'ok':'locked'}">${ok?'Débloqué':'Verrouillé'} · ${hint}</span>`:'';return `<button class="choice ${ok?'':'locked'}" ${ok?`onclick="choose(${i})"`:'disabled'}><span>${c.label}${hintHtml}</span><span>${ok?'›':'🔒'}</span></button>`;}
+function statBars(){return Object.entries(statsMeta).map(([k,l])=>`<div class="barRow"><div class="barHead"><span>${l}</span><span>${Math.min(state[k]||0,VALUE_MAX)}/${VALUE_MAX}</span></div><div class="barBg"><div class="barFill" style="width:${Math.min(((state[k]||0)/VALUE_MAX)*100,100)}%"></div></div></div>`).join('');}
+function toneText(){const arr=[['courage','Hylee commence à relever la tête.'],['discretion','Hylee survit en restant dans les angles morts.'],['trust','Remerii gagne du terrain dans son esprit.'],['suspicion','Hylee voit plus clair derrière le sourire du mage.'],['instability','Le froid en Hylee cherche une issue.'],['hope','Une porte semble enfin exister.']].sort((a,b)=>state[b[0]]-state[a[0]]);return arr[0][1];}
+function audioControls(){return `<div class="audioBox"><button class="ghost" onclick="toggleMute()">${state.muted?'Activer musique':'Couper musique'}</button><span>${musicName(state.currentTrack||'main')}</span><input class="vol" type="range" min="0" max="1" step="0.05" value="${state.volume}" oninput="setVolume(this.value)"></div>`;}
+function isCgScene(sc){return !!(sc && (sc.cg || String(sc.decor||'').startsWith('cg_')));}
+function renderChars(chars){chars=chars||[]; if(chars.length===0) return ''; if(chars.length===1){const c=chars[0]; return `<div class="characterLayer"><div class="charSlot center ${c[2]?'active':'inactive'}"><div class="spriteShell"><img src="${ASSETS[c[0]+'_'+c[1]]}" alt="${c[0]}"></div><div class="namePlate">${c[0]==='hylee'?'Hylee':'Remerii'}</div></div></div>`;} const left=chars[0], right=chars[1]; return `<div class="characterLayer"><div class="charSlot left ${left[2]?'active':'inactive'}"><div class="spriteShell"><img src="${ASSETS[left[0]+'_'+left[1]]}" alt="${left[0]}"></div><div class="namePlate">${left[0]==='hylee'?'Hylee':'Remerii'}</div></div><div class="charSlot right ${right[2]?'active':'inactive'}"><div class="spriteShell"><img src="${ASSETS[right[0]+'_'+right[1]]}" alt="${right[0]}"></div><div class="namePlate">${right[0]==='hylee'?'Hylee':'Remerii'}</div></div></div>`;}
+function drawerContent(){return `<section class="drawer ${state.showDrawer?'open':''}"><div class="drawerGrid"><div><div class="sectionTitle">Tendance actuelle</div><div class="note">${toneText()}</div>${statBars()}<div class="footerHint">Les valeurs n’apparaissent pas au joueur dans un VN classique, mais elles servent ici à visualiser les conséquences de tes choix pendant la démo.</div></div><div><div class="sectionTitle">Codex</div>${state.showCodex?`<div class="note"><p><b>Hylee</b> : jeune humaine serveuse à l’Auberge du Forestier, maltraitée par ses parents adoptifs et déjà sensible à la magie.</p><p><b>Remerii</b> : mage humaine élégante, calculatrice, qui teste Hylee avant de lui proposer un départ.</p><p><b>Fonctionnement</b> : après chaque choix, une réaction interne d’Hylee apparaît avant la suite de la scène.</p></div>`:`<div class="note">Le codex est fermé. Appuie sur <b>Codex</b> pour l’ouvrir ici.</div>`}<div class="sectionTitle" style="margin-top:14px">Historique des choix</div><div class="history">${state.history.length?[...state.history].reverse().map(h=>`<div class="entry"><b>${h.title}</b><br>Choix : ${h.choice}</div>`).join(''):'<div class="note">Les choix apparaîtront ici.</div>'}</div></div></div></section>`;}
+
+function openCodex(){
+  state.started = false;
+  state.screen = 'codex';
+  render();
+}
+function backToTitle(){
+  state.started = false;
+  state.screen = 'title';
+  render();
+}
+function renderCodex(){
+  const app=document.getElementById('app');
+  app.innerHTML=`<div class="codexScreen"><div class="codexLayout"><section class="codexHero"><img src="${ASSETS.decor_title}" alt="Sylvinia"><div class="codexContent"><div class="pill">✦ Codex de la démo</div><div class="title">Codex</div><div class="subtitle">Avant d’ouvrir la porte de l’auberge</div><div class="text">Cette page rassemble les repères essentiels pour profiter de la démo. Elle présente brièvement l’univers, les personnages et les enjeux de cette introduction du Tome 1.</div><div class="codexGrid"><article class="codexCard"><h3>Hylee</h3><p>Jeune humaine exploitée à l’Auberge du Forestier, Hylee cache une sensibilité magique rare. Sa peur des Sylviniens l’oblige à étouffer son don, mais son rêve de Mir’Aldas révèle un désir plus profond : apprendre, comprendre et quitter une vie qui l’écrase.</p></article><article class="codexCard"><h3>Remerii</h3><p>Mage humaine élégante, cultivée et calculatrice, Remerii remarque rapidement le potentiel d’Hylee. Ses méthodes sont parfois froides, mais son objectif semble clair : tester Hylee, évaluer son danger, puis lui offrir une porte de sortie.</p></article><article class="codexCard"><h3>Sylvinia</h3><p>Sylvinia est un monde de fantasy dominé par l’Empire sylvinien. Les Humains y vivent sous surveillance, surtout lorsqu’ils manifestent un potentiel magique. Pour Hylee, être découverte n’est pas une chance : c’est une menace.</p></article><article class="codexCard"><h3>Mir’Aldas</h3><p>Cité liée aux savoirs arcaniques et aux mages, Mir’Aldas représente pour Hylee un horizon presque impossible. Dans cette démo, elle n’est pas encore une destination atteinte, mais une promesse qui trouble son quotidien.</p></article><article class="codexCard"><h3>Magie</h3><p>La magie d’Hylee se manifeste par le froid, la glace et une perception instinctive de l’énergie. Remerii, elle, maîtrise son art avec précision. Entre les deux s’ouvre le cœur de la démo : apprendre à contrôler ce qui pourrait sauver ou détruire.</p></article><article class="codexCard"><h3>Les choix</h3><p>Les décisions ne modifient pas seulement les dialogues : elles orientent la confiance, la méfiance, l’instabilité magique et le courage d’Hylee. Certaines routes mènent vers la fuite, d’autres vers l’apprentissage, l’échec ou le dérapage.</p></article></div><div class="menuBtns"><button class="btn" onclick="backToTitle()">Retour à l’écran titre</button><button class="ghost" onclick="startDemo()">Commencer la démo ▶</button></div></div></section></div></div>`;
+}
+
+function render(){updateMusic(); if(state.screen==='codex'){renderCodex();return;} const app=document.getElementById('app'); if(!state.started){state.musicUnlocked=true;state.muted=false;updateMusic(true);app.innerHTML=`<div class="shell"><section class="hero"><div class="heroVisual"><video src="${ASSETS.video_title}" autoplay muted loop playsinline poster="${ASSETS.decor_title}"></video></div><div class="heroContent"><div class="pill">✦ Version 0.29</div><div class="title">Les Chroniques de Sylvinia</div><div class="subtitle">Introduction — Hylee et Remerii</div><div class="text">Bienvenue dans cette <b>démo interactive</b> des <b>Chroniques de Sylvinia</b>. Elle a pour but d’introduire l’univers de <b>Sylvinia</b> et le <b>Tome 1</b>, à travers la rencontre entre Hylee, une jeune humaine prisonnière d’une vie de servitude, et Remerii, une mage aussi élégante qu’énigmatique. Vos choix orienteront leur première rencontre, révéleront différentes facettes d’Hylee et pourront mener à plusieurs fins.</div><div class="menuBtns"><button class="btn" onclick="startDemo()">Commencer la démo ▶</button><button class="ghost" onclick="startTitleMusic()">Lancer la musique du menu ♪</button><button class="ghost" onclick="openCodex()">Ouvrir le codex</button></div><div class="footerHint">Sur mobile, le navigateur bloque souvent l’autoplay : appuie d’abord sur le bouton de musique si besoin.</div></div></section></div>`; return; } const sc=sceneObj(); const zoomClass=ZOOMMAP[state.scene==='__reaction'?(state.reaction?.next||'wake'):state.scene]||'zoom-soft pan-center'; app.innerHTML=`<div class="shell"><section class="frame"><header class="topbar"><div><div class="loc">${sc.location}</div><div class="chapter">${sc.title}</div><div class="chapterSub">${sc.subtitle||''}</div></div><div class="controls">${audioControls()}<button class="tagBtn" onclick="toggleDrawer()">Infos</button><button class="tagBtn" onclick="restart()">Recommencer</button></div></header><div class="stageWrap"><div class="stage"><div class="banner"><img class="bannerBg ${zoomClass}" src="${ASSETS[sc.decor]}" alt="Décor de scène"><div class="bannerOverlay"></div><div class="stageTag">${isCgScene(sc)?'Illustration CG':'Décor de scène'}</div>${isCgScene(sc)?'':renderChars(sc.chars)}</div><div class="drawerToggle"><button class="tagBtn" onclick="toggleDrawer()">${state.showDrawer?'Masquer le panneau':'Afficher le panneau'}</button></div><div class="dialogueCard ${sc.reaction?'reaction':''}"><div class="dialogueHeader"><div class="speakerWrap"><div class="dialogueLabel">${sc.reaction?'Réaction':'Dialogue'}</div><div class="speaker">${sc.speaker}</div></div>${sc.ending?'<div class="endBadge">Fin de démo</div>':''}</div><div class="dialogueText">${sc.text}</div><div class="choices">${sc.choices.length?sc.choices.map((c,i)=>renderChoice(c,i)).join(''):`<button class="btn" onclick="restart()">Rejouer</button>`}</div></div></div></div></section>${drawerContent()}</div>`; }
+window.startDemo=startDemo; window.openCodex=openCodex; window.backToTitle=backToTitle; window.startTitleMusic=startTitleMusic; window.toggleMute=toggleMute; window.setVolume=setVolume; window.restart=restart; window.toggleCodex=toggleCodex; window.toggleDrawer=toggleDrawer; window.choose=choose; 
+function initAutoMenuMusic(){
+  state.musicUnlocked = true;
+  state.muted = false;
+  state.currentTrack = null;
+  updateMusic(true);
+  const bgm = document.getElementById('bgm');
+  const tryPlay = () => {
+    bgm.volume = state.volume;
+    bgm.play().catch(() => {});
+  };
+  tryPlay();
+  const resume = () => {
+    state.musicUnlocked = true;
+    state.muted = false;
+    updateMusic(true);
+    bgm.play().catch(() => {});
+    document.removeEventListener('pointerdown', resume);
+    document.removeEventListener('touchstart', resume);
+    document.removeEventListener('click', resume);
+  };
+  document.addEventListener('pointerdown', resume, {once:true});
+  document.addEventListener('touchstart', resume, {once:true});
+  document.addEventListener('click', resume, {once:true});
+}
+
+ASSETS.cg_bonus_report="assets/images/cg_bonus_report.png";
+ASSETS.cg_bonus_arrest="assets/images/cg_bonus_arrest.png";
+ASSETS.cg_bonus_road="assets/images/cg_bonus_road.png";
+ASSETS.music_epilogue="assets/audio/music_epilogue.mp3";
+
+SCENES.ending_hand={
+  decor:"cg_ending_hand",
+  music:"epilogue",
+  location:"Fin de démo",
+  title:"La main tendue",
+  subtitle:"Fin canonique — Illustration de fin",
+  speaker:"Narrateur",
+  text:"Hylee quitte l’Auberge du Forestier aux côtés de Remerii. Derrière elle, la servitude ne disparaît pas d’un coup, mais elle cesse enfin de dicter chacun de ses pas. La mage lui a tendu une porte, et cette fois Hylee l’a franchie.<br><br><b>Merci d’avoir joué à cette démo.</b> Cette route est la fin canonique de l’introduction. Mais ce n’est pas tout…",
+  chars:[],
+  choices:[{label:"Continuer — scène bonus",next:"ending_hand_bonus_report",effects:{},longFade:true,bridge:{decor:"cg_ending_hand",music:"epilogue",title:"One more thing",subtitle:"Épilogue bonus",speaker:"Narrateur",text:"Le silence s’étire. Puis l’histoire laisse un dernier regard derrière Hylee…"}}],
+  cg:true,
+  ending:true
+};
+SCENES.ending_hand_bonus_report={
+  decor:"cg_bonus_report",
+  music:"epilogue",
+  location:"Épilogue bonus",
+  title:"Ce qu’il advient derrière elles",
+  subtitle:"L’Auberge du Forestier — Illustration CG",
+  speaker:"Narrateur",
+  text:"À l’auberge, la mère n’attend plus. Elle a fait venir trois Sylviniens et accuse son mari d’avoir eu recours à des pratiques occultes. Dans ce monde, une telle dénonciation suffit à faire basculer une vie. Le secret sordide de la maison remonte enfin à la surface.",
+  chars:[],
+  choices:[{label:"Continuer",next:"ending_hand_bonus_arrest",effects:{},bridge:{decor:"cg_bonus_report",music:"epilogue",title:"Épilogue bonus",subtitle:"Le jugement tombe",speaker:"Narrateur",text:"Les mots prononcés ne peuvent plus être repris. Les Sylviniens agissent aussitôt."}}],
+  cg:true,
+  ending:true
+};
+SCENES.ending_hand_bonus_arrest={
+  decor:"cg_bonus_arrest",
+  music:"epilogue",
+  location:"Épilogue bonus",
+  title:"L’arrestation",
+  subtitle:"Sous la pluie — Illustration CG",
+  speaker:"Narrateur",
+  text:"Sous la pluie nocturne, le père est jeté à genoux et entravé par la magie sylvinienne. La mère assiste à la scène, bouleversée, mais elle ne détourne pas les yeux. L’autorité qu’ils faisaient peser sur Hylee se brise enfin, trop tard pour réparer ce qu’ils ont fait d’elle.",
+  chars:[],
+  choices:[{label:"Continuer",next:"ending_hand_bonus_road",effects:{},bridge:{decor:"cg_bonus_arrest",music:"epilogue",title:"Épilogue bonus",subtitle:"La route s’ouvre",speaker:"Narrateur",text:"Tandis que l’auberge s’effondre sur elle-même, deux silhouettes s’éloignent déjà dans la nuit."}}],
+  cg:true,
+  ending:true
+};
+SCENES.ending_hand_bonus_road={
+  decor:"cg_bonus_road",
+  music:"epilogue",
+  location:"Épilogue bonus",
+  title:"Une nuit entre deux étoiles",
+  subtitle:"Hylee et Remerii — Illustration CG",
+  speaker:"Narrateur",
+  text:"Sous les deux lunes, Hylee prend la route aux côtés de Remerii. La mage garde au coin des lèvres un sourire presque imperceptible, comme si elle savait exactement ce qu’elles laissent derrière elles. À l’auberge, la dénonciation de la mère et l’arrestation du père n’avaient rien d’un simple hasard : tout porte à croire que Remerii a orienté cette chute avec une froide lucidité. Hylee, elle, n’en mesure pas encore toute la portée. Aucun palais n’illumine l’horizon, seulement la nuit, le chemin, et cette promesse fragile d’une vie nouvelle. Pour la première fois, elle n’abandonne pas seulement son ancienne vie : elle marche déjà vers la suivante.",
+  chars:[],
+  choices:[],
+  cg:true,
+  ending:true
+};
+ZOOMMAP.ending_hand_bonus_report="zoom-soft pan-center";
+ZOOMMAP.ending_hand_bonus_arrest="zoom-soft pan-center";
+ZOOMMAP.ending_hand_bonus_road="zoom-soft pan-center";
+
+initAutoMenuMusic();
+render();
+</script>
+</body>
+</html>
